@@ -24,6 +24,10 @@ if (!defined('QA_VERSION')) { // don't allow this page to be requested directly 
 	exit;
 }
 
+// PHP 8.1+ throws mysqli_sql_exception by default, which bypasses Q2A's error handler.
+// Disable exception mode so queries return false on error, letting Q2A handle failures gracefully.
+mysqli_report(MYSQLI_REPORT_OFF);
+
 
 /**
  * Indicates to the Q2A database layer that database connections are permitted fro this point forwards
