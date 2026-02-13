@@ -1,16 +1,15 @@
-# Ignore Q2A config file and .htaccess in development
+# Q2A config (generated at runtime)
 /qa-config.php
 /.htaccess
 
-# Ignore cached files
+# Cache & blobs
 /qa-cache/*/
+/qa-blobs/
 
-# Other files
+# OS files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+
+# IDE
 .idea/
+.vscode/

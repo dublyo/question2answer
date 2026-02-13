@@ -1,62 +1,109 @@
-Question2Answer
------------------------------
+# Question2Answer — Docker
 
-[![Build Status](https://travis-ci.org/q2a/question2answer.png?branch=dev)](https://travis-ci.org/q2a/question2answer/branches)
+Dockerized [Question2Answer](http://www.question2answer.org/) (Q2A) 1.8.6, a popular open-source Q&A platform for PHP/MySQL.
 
-[Question2Answer][Q2A] (Q2A) is a popular free open source Q&A platform for PHP/MySQL, used by over 20,898 [sites] in 40 languages.
+Pre-built Docker image with PHP 8.2, Apache, and automatic configuration from environment variables. Used by over 20,000 sites in 40 languages.
 
-Q2A is highly customisable with many awesome features:
+## Quick Start
 
-- Asking and answering questions (duh!)
-- Voting, comments, best answer selection, follow-on and closed questions.
-- Complete user management including points-based reputation management.
-- Create experts, editors, moderators and admins.
-- Fast integrated search engine, plus checking for similar questions when asking.
-- Categories (up to 4 levels deep) and/or tagging.
-- Easy styling with CSS themes.
-- Supports translation into any language.
-- Custom sidebar, widgets, pages and links.
-- SEO features such as neat URLs, microformats and XML Sitemaps.
-- RSS, email notifications and personal news feeds.
-- User avatars (or Gravatar) and custom fields.
-- Private messages and public wall posts.
-- Log in via Facebook or others (using plugins).
-- Out-of-the-box WordPress 3+ integration.
-- Out-of-the-box Joomla! 3.0+ integration (in conjunction with a Joomla! extension).
-- Custom single sign-on support for other sites.
-- PHP/MySQL scalable to millions of users and posts.
-- Safe from XSS, CSRF and SQL injection attacks.
-- Beat spam with captchas, rate-limiting, moderation and/or flagging.
-- Block users, IP addresses, and censor words
+```bash
+docker run -d --name q2a \
+  -p 80:80 \
+  -e QA_MYSQL_HOSTNAME=your-mysql-host \
+  -e QA_MYSQL_USERNAME=q2a \
+  -e QA_MYSQL_PASSWORD=your-password \
+  -e QA_MYSQL_DATABASE=question2answer \
+  ghcr.io/dublyo/question2answer:latest
+```
 
-Q2A also features an extensive plugin system:
+Then visit `http://localhost` to complete the setup wizard (creates database tables and admin account).
 
-- Modify the HTML output for a page with *layers*.
-- Add custom pages to a Q2A site with *page modules*.
-- Add extra content in various places with *widget modules*.
-- Allow login via an external identity provider such as Facebook with *login modules*.
-- Integrate WYSIWYG or other text editors with *editor/viewer modules*.
-- Do something when certain actions take place with *event modules*.
-- Validate and/or modify many types of user input with *filter modules*.
-- Implement a custom search engine with *search modules*.
-- Add extra spam protection with *captcha modules*.
-- Extend many core Q2A functions using *function overrides*.
+## Docker Compose
 
+```yaml
+services:
+  q2a:
+    image: ghcr.io/dublyo/question2answer:latest
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    environment:
+      QA_MYSQL_HOSTNAME: mysql
+      QA_MYSQL_USERNAME: q2a
+      QA_MYSQL_PASSWORD: changeme123
+      QA_MYSQL_DATABASE: question2answer
+    volumes:
+      - q2a-content:/var/www/html/qa-content
+      - q2a-blobs:/var/www/html/qa-blobs
 
-----------
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: question2answer
+      MYSQL_USER: q2a
+      MYSQL_PASSWORD: changeme123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
+volumes:
+  q2a-content:
+  q2a-blobs:
+  mysql-data:
+```
 
-As of version 1.6.3, all development is taking place through GitHub. The collaborative development process is being managed by [Scott Vivian][1]. (Note that official releases are still distributed via the [Q2A website][Q2A].)
+## Environment Variables
 
-Please read the [contributing page][2] for more information on how to get involved.
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `QA_MYSQL_HOSTNAME` | Yes | — | MySQL hostname or container name |
+| `QA_MYSQL_PORT` | No | `3306` | MySQL port |
+| `QA_MYSQL_USERNAME` | Yes | — | MySQL user |
+| `QA_MYSQL_PASSWORD` | Yes | — | MySQL password |
+| `QA_MYSQL_DATABASE` | Yes | — | Database name |
+| `QA_MYSQL_TABLE_PREFIX` | No | `qa_` | Table name prefix |
 
+## How It Works
 
-Thanks and enjoy!
+1. **Container starts** — `entrypoint.sh` generates `qa-config.php` from environment variables
+2. **MySQL wait** — Waits up to 60s for MySQL to be ready
+3. **Apache starts** — PHP 8.2 with MySQLi and mod_rewrite enabled
+4. **First visit** — Q2A's setup wizard creates all database tables and asks for admin credentials
+5. **Ready** — Your Q&A site is live with clean URLs
 
-Gideon
+## Persistent Data
 
+Mount these volumes to keep data across container restarts:
 
-[Q2A]: http://www.question2answer.org/
-[1]: http://www.question2answer.org/qa/user/Scott
-[2]: https://github.com/q2a/question2answer/blob/master/CONTRIBUTING.md
-[sites]: http://www.question2answer.org/sites.php
+| Volume | Path | Description |
+|--------|------|-------------|
+| Content | `/var/www/html/qa-content` | Uploaded files |
+| Blobs | `/var/www/html/qa-blobs` | Avatars and attachments |
+| MySQL | `/var/lib/mysql` | Database (on MySQL container) |
+
+## Features
+
+- Asking and answering questions with voting and best answer selection
+- Categories (up to 4 levels deep) and/or tagging
+- Points-based reputation, badges, and user management
+- Fast integrated search engine
+- RSS feeds, email notifications, personal news feeds
+- User avatars (or Gravatar) and private messages
+- SEO-friendly URLs, XML Sitemaps
+- Extensible with themes and plugins
+- Spam protection with captchas, rate-limiting, moderation
+
+## Dublyo PaaS
+
+This template is available on [Dublyo](https://dublyo.com) as a one-click deploy. Deploy it with a managed MySQL database through the dashboard.
+
+## License
+
+GPL v2+ (original Question2Answer license)
