@@ -63,7 +63,7 @@ fi
 # ============================================
 # Fix permissions on writable directories
 # ============================================
-chown -R www-data:www-data /var/www/html/qa-cache /var/www/html/qa-content
+chown -R www-data:www-data /var/www/html/qa-cache /var/www/html/qa-content /var/www/html/qa-theme /var/www/html/qa-plugin
 [ -d /var/www/html/qa-blobs ] && chown -R www-data:www-data /var/www/html/qa-blobs
 
 # ============================================

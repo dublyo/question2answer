@@ -13,7 +13,7 @@ RUN a2enmod rewrite
 RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 # Create writable directories
-RUN mkdir -p /var/www/html/qa-cache /var/www/html/qa-blobs /var/www/html/qa-content
+RUN mkdir -p /var/www/html/qa-cache /var/www/html/qa-blobs /var/www/html/qa-content /var/www/html/qa-theme /var/www/html/qa-plugin
 
 # Copy Q2A source
 COPY --chown=www-data:www-data . /var/www/html/
@@ -28,7 +28,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 755 /var/www/html && \
-    chmod -R 775 /var/www/html/qa-cache /var/www/html/qa-content
+    chmod -R 775 /var/www/html/qa-cache /var/www/html/qa-content /var/www/html/qa-theme /var/www/html/qa-plugin
 
 EXPOSE 80
 
