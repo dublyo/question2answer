@@ -102,7 +102,7 @@ Mount these volumes to keep data across container restarts:
 
 ## Dublyo PaaS
 
-This template is available on [Dublyo](https://dublyo.com) as a one-click deploy. Deploy it with a managed MySQL database through the dashboard.
+This template is available on [Dublyo](https://dublyo.com) as a one-click deploy. Host it with a managed MySQL database through the dashboard.
 
 ## License
 
