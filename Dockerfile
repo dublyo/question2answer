@@ -3,6 +3,9 @@ FROM php:8.2-apache
 # Install MySQLi extension
 RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
 
+# Suppress PHP 8.2 deprecation warnings (Q2A 1.8.6 uses strlen(null) patterns)
+RUN echo "error_reporting = E_ALL & ~E_DEPRECATED" > /usr/local/etc/php/conf.d/q2a.ini
+
 # Enable Apache mod_rewrite for clean URLs
 RUN a2enmod rewrite
 

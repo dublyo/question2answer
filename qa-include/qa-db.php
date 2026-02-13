@@ -643,7 +643,7 @@ function qa_db_multi_select($selectspecs)
 				$subquery .= ' AS ' . $columnas;
 		}
 
-		if (strlen(@$selectspec['source']))
+		if (strlen((string)@$selectspec['source']))
 			$subquery .= ' FROM ' . $selectspec['source'];
 
 		$subquery .= ')';
