@@ -134,7 +134,7 @@ function qa_initialize_php()
 	if (qa_php_version_below('5.1.6'))
 		qa_fatal_error('Q2A requires PHP 5.1.6 or later');
 
-	error_reporting(E_ALL); // be ultra-strict about error checking
+	error_reporting(E_ALL & ~E_DEPRECATED); // be ultra-strict about error checking (suppress PHP 8.2 deprecation notices)
 
 	@ini_set('magic_quotes_runtime', 0);
 
